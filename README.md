@@ -1,7 +1,7 @@
 # Mlops-Vehicle-Project
 
 .
-├── app.py
+<!-- ├── app.py
 ├── config
 │   ├── model.yaml
 │   └── schema.yaml
@@ -67,4 +67,4 @@
 │   └── top_level.txt
 └── template.py
 
-18 directories, 48 files
+18 directories, 48 files -->
