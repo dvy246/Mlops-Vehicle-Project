@@ -8,6 +8,7 @@ import certifi
 from dotenv import load_dotenv
 load_dotenv()
 
+#this  is used to setup connection with MongoDB
 
 ca=certifi.where()
 class MongoDBConnection:
