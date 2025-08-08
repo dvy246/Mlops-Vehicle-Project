@@ -1,6 +1,7 @@
-
 some_credentials.txt
 projectflow.txt
+Logs/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
