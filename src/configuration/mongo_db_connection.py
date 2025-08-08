@@ -15,23 +15,24 @@ class MongoDBConnection:
     client=None
 
     def __init__(self,database_name:str=DATABASE_NAME):
-        try:
-            if MongoDBConnection.client is None:
-                try:
-                    mongodb_url = os.getenv(mongodb_url)
-                    if not mongodb_url:
-                        raise ValueError(f"Environment variable '{MONGODB_URL_KEY}' is not set.")
-                    
-                    MongoDBConnection.client = pymongo.MongoClient(mongodb_url, tlsCAFile=ca)
-                    logging.info(f"MongoDB client created with database: {database_name}")
-                except Exception as e:
-                    raise MyException(e, sys) from e
+            try:
+                if MongoDBConnection.client is None:
+                    try:
+                        mongodb_url = MONGODB_URL_KEY
+                        if not mongodb_url:
+                            raise ValueError(f"Environment variable '{MONGODB_URL_KEY}' is not set.")
+                        
+                        MongoDBConnection.client = pymongo.MongoClient(mongodb_url, tlsCAFile=ca)
+                        logging.info(f"MongoDB client created with database: {database_name}")
+                    except Exception as e:
+                        raise MyException(e, sys) from e
 
+                # Ensure every instance has proper attribute setup
                 self.client = MongoDBConnection.client
                 self.database = self.client[database_name]  # Connect to the specified database
                 self.database_name = database_name
                 logging.info("MongoDB connection successful.")
 
-        except Exception as e:
-                raise MyException(e, sys) from e
-    
+            except Exception as e:
+                    logging.info(f"Error while connecting to MongoDB: {e}")
+                    raise MyException(e, sys) from e

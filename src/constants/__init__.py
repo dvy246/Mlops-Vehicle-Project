@@ -1,10 +1,13 @@
 import os
 from datetime import date
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # For MongoDB connection
 DATABASE_NAME = "PROJECT1"
-COLLECTION_NAME = "Vehicle_data"
-MONGODB_URL_KEY = "MONGODB_URL"
+COLLECTION_NAME = "vehicle_data"
+MONGODB_URL_KEY = os.getenv('mongo_url')
 
 PIPELINE_NAME: str = ""
 ARTIFACT_DIR: str = "artifact"
