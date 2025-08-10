@@ -7,6 +7,9 @@ TIMESTAMP: str = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
 
 @dataclass
 class TrainingPipelineConfig:
+    '''A class to represent the configuration of the training pipeline.
+    This class contains the pipeline name, artifact directory, and timestamp.'''
+    
     pipeline_name: str = PIPELINE_NAME
     artifact_dir: str = os.path.join(ARTIFACT_DIR, TIMESTAMP)
     timestamp: str = TIMESTAMP
@@ -15,6 +18,10 @@ training_pipeline_config: TrainingPipelineConfig = TrainingPipelineConfig()
 
 @dataclass
 class DataIngestionConfig:
+    '''A class to represent the configuration of data ingestion process.
+    This class contains the directory paths for data ingestion, feature store,
+    training and testing datasets, and the train-test split ratio.'''
+
     data_ingestion_dir: str = os.path.join(training_pipeline_config.artifact_dir, DATA_INGESTION_DIR_NAME)
     feature_store_file_path: str = os.path.join(data_ingestion_dir, DATA_INGESTION_FEATURE_STORE_DIR, FILE_NAME)
     training_file_path: str = os.path.join(data_ingestion_dir, DATA_INGESTION_INGESTED_DIR, TRAIN_FILE_NAME)
@@ -24,5 +31,8 @@ class DataIngestionConfig:
 
 @dataclass
 class DataValidationConfig:
+    '''A class to represent the configuration of data validation process.
+    This class contains the directory paths for data validation and the report file.'''
+
     data_validation_dir: str = os.path.join(training_pipeline_config.artifact_dir, DATA_VALIDATION_DIR_NAME)
     validation_report_file_path: str = os.path.join(data_validation_dir, DATA_VALIDATION_REPORT_FILE_NAME)
