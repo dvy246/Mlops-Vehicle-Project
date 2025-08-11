@@ -1,16 +1,20 @@
 import sys
 from src.exception import MyException
 from src.components.data_ingestion import DataIngestion
-from src.entity.artifact_entity import DataIngestionArtifact,DataValidationArtifact
+from src.entity.artifact_entity import DataIngestionArtifact,DataValidationArtifact,DataTransformationArtifact
 from src.components.data_validation import DataValidation
-from src.entity.config_entity import DataIngestionConfig, DataValidationConfig
-from src.utils import read_yaml_file,read_json_file
+from src.components.data_transformation import DataTransformation
+from src.entity.config_entity import DataIngestionConfig, DataValidationConfig,DataTransformationConfig
 from src.logger import logging
 
 class TrainingPipeline:
     def __init__(self):
        self.data_ingestion = DataIngestion() 
-       self.data_validation = DataValidation()
+       self.data_validation = DataValidation(data_ingestion_artifact=DataIngestionArtifact,
+                                             data_validation_config=DataValidationConfig)
+       self.data_transformation=DataTransformation(data_validation_artifact=DataValidationArtifact,
+                                                    data_ingestion_artifact=DataIngestionArtifact,
+                                                    data_transformation_config=DataTransformationConfig)
        
 
     def start_ingestion(self) -> DataIngestionArtifact:
@@ -33,9 +37,23 @@ class TrainingPipeline:
             logging.info(f"Data validation config: {self.data_validation.data_validation_config}")
             data_validation = DataValidation(data_ingestion_artifact=data_ingestion_artifact,
                                              data_validation_config=self.data_validation.data_validation_config)
-            data_validation_artifact = data_validation.validate_data()
+            data_validation_artifact = data_validation.initiate_data_validation()
             logging.info("Data validation process completed successfully")
             return data_validation_artifact
+        
+        except Exception as e:
+            raise MyException(e, sys)
+        
+    def start_transformation(self, data_validation_artifact: DataValidationArtifact,data_ingestion_artifact: DataIngestionArtifact,data_transformation_config:DataTransformationConfig) -> DataTransformationArtifact:
+        try:
+            logging.info("Starting data transformation process")
+            logging.info(f"Data transformation config: {self.data_transformation.data_transformation_config}")
+            data_transformation = DataTransformation(data_validation_artifact=data_validation_artifact,
+                                                     data_ingestion_artifact=data_ingestion_artifact,
+                                                     data_transformation_config=data_transformation_config)
+            data_transformation_artifact = data_transformation.initalize_transformation()
+            logging.info("Data transformation process completed successfully")
+            return data_transformation_artifact
         
         except Exception as e:
             raise MyException(e, sys)
@@ -48,6 +66,8 @@ class TrainingPipeline:
                 logging.info("Training pipeline completed successfully")
                 data_validation_artifact = self.start_validation(data_ingestion_artifact)
                 logging.info(f"Data validation artifact: {data_validation_artifact}")
-                
+                data_transformation_artifact = self.start_transformation(data_validation_artifact,data_ingestion_artifact,data_transformation_config=DataTransformationConfig())
+                logging.info(f"Data transformation artifact: {data_transformation_artifact}")
+
             except Exception as e:
                 raise MyException(e, sys)

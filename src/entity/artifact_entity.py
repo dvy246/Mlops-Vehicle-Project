@@ -31,4 +31,20 @@ class DataValidationArtifact:
     validation_report_file_path: str
     message:str
 
+@dataclass
+class DataTransformationArtifact:
+    """
+    A class to represent the artifact of data transformation process.
+    
+    This class stores the paths of the transformed training and testing datasets,
+    as well as the path to the preprocessing object file.
+
+    Attributes:
+        transformed_train_file_path (str): Path to the transformed training dataset.
+        transformed_test_file_path (str): Path to the transformed testing dataset.
+        preprocessing_object_file_path (str): Path to the file containing the preprocessing object.
+    """
+    transformed_train_file_path: str
+    transformed_test_file_path: str
+    preprocessing_object_file_path: str 
     

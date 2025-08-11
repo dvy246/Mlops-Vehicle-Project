@@ -36,3 +36,12 @@ class DataValidationConfig:
 
     data_validation_dir: str = os.path.join(training_pipeline_config.artifact_dir, DATA_VALIDATION_DIR_NAME)
     validation_report_file_path: str = os.path.join(data_validation_dir, DATA_VALIDATION_REPORT_FILE_NAME)
+
+@dataclass
+class DataTransformationConfig:
+    '''A class to represent the configuration of data transformation process.
+    This class contains the directory paths for data transformation and the transformed file.'''
+    data_transformation_dir:str=os.path.join(training_pipeline_config.artifact_dir, DATA_TRANSFORMATION_DIR_NAME)
+    transformed_file_path_train: str = os.path.join(data_transformation_dir,DATA_TRANSFORMATION_DIR_NAME,TRAIN_FILE_NAME.replace('csv','npy'))
+    transformed_file_path_test: str = os.path.join(data_transformation_dir,DATA_TRANSFORMATION_DIR_NAME,TEST_FILE_NAME.replace('csv','npy'))
+    transformed_object_file_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR,PREPROCSSING_OBJECT_FILE_NAME)

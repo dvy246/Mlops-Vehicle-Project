@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from src.constants import *
 
-from src.utils.main_utils import read_yaml_file, write_yaml_file
+from src.utils.main_utils import read_yaml_file
 from src.entity.config_entity import DataValidationConfig, DataIngestionConfig
 from src.entity.artifact_entity import DataValidationArtifact, DataIngestionArtifact
 from src.exception import MyException
