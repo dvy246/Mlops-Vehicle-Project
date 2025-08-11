@@ -40,7 +40,7 @@ class DataTransformation:
             minmax=MinMaxScaler()
             logging.info("Creating column transformer with standard and min-max scaling")
             numerical_cols=self._schema['num_features']
-            mm_cols=self._schema['mm_features']
+            mm_cols=self._schema['mm_columns']
 
             # Create a column transformer to apply different transformations to different columns
             preprocessor=ColumnTransformer(transformers=[
@@ -84,7 +84,11 @@ class DataTransformation:
             pd.DataFrame: The output dataframe with dummy columns created.
         '''
         logging.info('creating dummy columns for categorical variables')
-        df=pd.get_dummies(df,drop_first=True)
+        categorical_cols=df.select_dtypes(include=['object']).columns
+        for col in categorical_cols:
+            dummies=pd.get_dummies(df[col],drop_first=True)
+            pd.concat([df,dummies],axis=1)
+            df=df.drop(columns=[col],axis=1)
         return df
     
     def drop_id_column(self,df:pd.DataFrame) -> pd.DataFrame:
@@ -126,51 +130,36 @@ class DataTransformation:
     @staticmethod
     def read_data(file_path: str) -> pd.DataFrame:
         '''
-        Read data from a file.
+        Read data from a file with proper error handling and validation.
         This method reads data from a file and returns a pandas DataFrame.
         Args:
             file_path (str): The path to the file containing the data.
         Returns:
             pd.DataFrame: The data read from the file as a pandas DataFrame.
+        Raises:
+            ValueError: If the file is empty or contains only headers.
+            FileNotFoundError: If the file doesn't exist.
         '''
-        python
- Copy
- Insert
- Export
-
-@staticmethod
-def read_data(file_path: str) -> pd.DataFrame:
-    '''
-    Read data from a file with proper error handling and validation.
-    This method reads data from a file and returns a pandas DataFrame.
-    Args:
-        file_path (str): The path to the file containing the data.
-    Returns:
-        pd.DataFrame: The data read from the file as a pandas DataFrame.
-    Raises:
-        ValueError: If the file is empty or contains only headers.
-        FileNotFoundError: If the file doesn't exist.
-    '''
-    try:
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found at path: {file_path}")
+        try:
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"File not found at path: {file_path}")
+                
+            df = pd.read_csv(file_path,chunksize=1000)
             
-        df = pd.read_csv(file_path)
-        
-        if df.empty:
-            raise ValueError(f"File is empty: {file_path}")
+            if df.empty:
+                raise ValueError(f"File is empty: {file_path}")
+                
+            if len(df.columns) == 0:
+                raise ValueError(f"File contains only headers: {file_path}")
+                
+            logging.info(f"Successfully read {len(df)} rows from {file_path}")
+            return df
             
-        if len(df.columns) == 0:
-            raise ValueError(f"File contains only headers: {file_path}")
-            
-        logging.info(f"Successfully read {len(df)} rows from {file_path}")
-        return df
-        
-    except pd.errors.EmptyDataError:
-        raise ValueError(f"File is empty or contains no data: {file_path}")
-    except Exception as e:
-        logging.error(f"Error reading data from {file_path}: {str(e)}")
-        raise MyException(e, sys)
+        except pd.errors.EmptyDataError:
+            raise ValueError(f"File is empty or contains no data: {file_path}")
+        except Exception as e:
+            logging.error(f"Error reading data from {file_path}: {str(e)}")
+            raise MyException(e, sys)
     
     def initalize_transformation(self) -> DataTransformationArtifact:
         '''
@@ -181,70 +170,70 @@ def read_data(file_path: str) -> pd.DataFrame:
             as well as the path to the preprocessing object file.
         '''
         try:
-            logging.info('Starting data transformation process')
-            if not self.data_validation_artifact.validation_status:
-                raise MyException("Data validation failed. Cannot proceed with data transformation.", sys)
-            
-            # Read training and testing data
-            train_df = self.read_data(file_path=self.data_ingestion_artifact.trained_file_path)
-            test_df = self.read_data(file_path=self.data_ingestion_artifact.test_file_path)
-            logging.info('Data read successfully from ingestion artifact')
-             
-            #taking target and input columns from train and test dataframes
-            input_train_df=train_df.drop(columns=[TARGET_COLUMN],axis=1)
-            input_test_df=test_df.drop(columns=[TARGET_COLUMN],axis=1)
-
-            target_train_df=train_df[TARGET_COLUMN]
-            target_test_df=test_df[TARGET_COLUMN]
-            logging.info('Input and target columns separated successfully')
-
-            # Map gender column to numerical values
-            input_train_df = self.map_gender_columns(input_train_df)
-            input_test_df = self.map_gender_columns(input_test_df)
-
-            # Create dummy columns for categorical variables
-            input_train_df = self.create_dummy_columns(input_train_df)
-            input_test_df = self.create_dummy_columns(input_test_df)
-
-            # Drop id column
-            input_train_df = self.drop_id_column(input_train_df)
-            input_test_df = self.drop_id_column(input_test_df)
-
-            # Rename columns
-            input_train_df = self.rename_columns(input_train_df)
-            input_test_df = self.rename_columns(input_test_df)
-            logging.info('Data preprocessing steps completed successfully')
-
-            # Return the transformed dataframes
-            preprocess=self.get_transformation_object()
-            logging.info('Transformation object created successfully')
-
-            transformed_train_df = preprocess.fit_transform(input_train_df)
-            transformed_test_df = preprocess.transform(input_test_df)
-            logging.info('Data transformed successfully using the preprocessing object')
-
-            #applying imbalance handling
-            smote_enn = SMOTEENN(sampling_strategy='minority', random_state=42)
-            final_input_train_df,final_target_train_df = smote_enn.fit_resample(transformed_train_df, target_train_df)
-            final_input_test_df,final_target_test_df = smote_enn.fit_resample(transformed_test_df, target_test_df)
-            logging.info('Imbalance handling applied successfully using SMOTEENN')
-
-            train_array=np.c_[final_input_train_df,np.array(final_target_train_df)]
-            test_array=np.c_[final_input_test_df,np.array(final_target_test_df)]
-            logging.info('Data transformed successfully and arrays created and ready to be saved')
-
-            # Save transformed data to disk
-            save_object(file_path=self.data_transformation_config.transformed_object_file_path, obj=preprocess)
-            save_numpy_array_data(file_path=self.data_transformation_config.transformed_file_path_train, array=train_array)
-            save_numpy_array_data(file_path=self.data_transformation_config.transformed_file_path_test, array=test_array)
-            logging.info('Transformed data saved successfully to disk') 
-
-            # Create and return the DataTransformationArtifact
-            data_transformation_artifact = DataTransformationArtifact(transformed_train_file_path=self.data_transformation_config.transformed_file_path_train,
-                                                                      transformed_test_file_path=self.data_transformation_config.transformed_file_path_test,
-                                                                      preprocessing_object_file_path=self.data_transformation_config.transformed_object_file_path)
-            logging.info(f"Data transformation artifact: {data_transformation_artifact}")
-            return data_transformation_artifact
-        
+                logging.info('Starting data transformation process')
+                if not self.data_validation_artifact.validation_status:
+                        raise MyException("Data validation failed. Cannot proceed with data transformation.", sys)
+                chunk_size = 10000
+                train_chunks = pd.read_csv(self.data_ingestion_artifact.trained_file_path, chunksize=chunk_size)
+                test_chunks = pd.read_csv(self.data_ingestion_artifact.test_file_path, chunksize=chunk_size)
+                
+                # Process training data in chunks
+                processed_train_chunks = []
+                for chunk in train_chunks:
+                    input_train_df = chunk.drop(columns=[TARGET_COLUMN], axis=1)
+                    target_train_df = chunk[TARGET_COLUMN]
+                    
+                    input_train_df = self.map_gender_columns(input_train_df)
+                    input_train_df = self.create_dummy_columns(input_train_df)
+                    input_train_df = self.drop_id_column(input_train_df)
+                    input_train_df = self.rename_columns(input_train_df)
+                    
+                    processed_train_chunks.append((input_train_df, target_train_df))
+                
+                # Process test data in chunks
+                processed_test_chunks = []
+                for chunk in test_chunks:
+                    input_test_df = chunk.drop(columns=[TARGET_COLUMN], axis=1)
+                    target_test_df = chunk[TARGET_COLUMN]
+                    
+                    input_test_df = self.map_gender_columns(input_test_df)
+                    input_test_df = self.create_dummy_columns(input_test_df)
+                    input_test_df = self.drop_id_column(input_test_df)
+                    input_test_df = self.rename_columns(input_test_df)
+                    
+                    processed_test_chunks.append((input_test_df, target_test_df))
+                
+                # Combine processed chunks
+                input_train_df = pd.concat([c[0] for c in processed_train_chunks])
+                target_train_df = pd.concat([c[1] for c in processed_train_chunks])
+                input_test_df = pd.concat([c[0] for c in processed_test_chunks])
+                target_test_df = pd.concat([c[1] for c in processed_test_chunks])
+                
+                # Continue with transformation
+                preprocess = self.get_transformation_object()
+                transformed_train_df = preprocess.fit_transform(input_train_df)
+                transformed_test_df = preprocess.transform(input_test_df)
+                
+                # Apply SMOTEENN with adjusted parameters to handle imbalanced data
+                smote_enn = SMOTEENN(sampling_strategy=0.5, random_state=42)
+                final_input_train_df, final_target_train_df = smote_enn.fit_resample(transformed_train_df, target_train_df)
+                final_input_test_df, final_target_test_df = smote_enn.fit_resample(transformed_test_df, target_test_df)
+                
+                # Save transformed data
+                train_array = np.c_[final_input_train_df, np.array(final_target_train_df)]
+                test_array = np.c_[final_input_test_df, np.array(final_target_test_df)]
+                os.makedirs(os.path.dirname(self.data_transformation_config.transformed_object_file_path), exist_ok=True)
+                save_object(file_path=self.data_transformation_config.transformed_object_file_path, obj=preprocess)
+                save_numpy_array_data(file_path=self.data_transformation_config.transformed_file_path_train, array=train_array)
+                save_numpy_array_data(file_path=self.data_transformation_config.transformed_file_path_test, array=test_array)
+                logging.info('completed saved transformed data')
+                
+                return DataTransformationArtifact(
+                    transformed_train_file_path=self.data_transformation_config.transformed_file_path_train,
+                    transformed_test_file_path=self.data_transformation_config.transformed_file_path_test,
+                    preprocessing_object_file_path=self.data_transformation_config.transformed_object_file_path
+                )
+                
+                
         except Exception as e:
-            raise MyException(e, sys)
+          raise MyException(e, sys)
