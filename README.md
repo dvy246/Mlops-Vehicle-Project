@@ -50,70 +50,44 @@ Implement data transformation logic in components.data_transformation.py and cre
 Step 11: Model Training
 Define and implement model training steps in components.model_trainer.py using code from estimator.py.
 
+# Project Structure
+
+```bash
 app.py
 ├── config
-│ ├── model.yaml
-│ └── schema.yaml
+│   ├── model.yaml
+│   └── schema.yaml
 ├── demo.py
 ├── Dockerfile
 ├── LICENSE
 ├── Logs
-│ └── 2025-08-06.log
+│   └── 2025-08-06.log
 ├── notebook
-│ ├── data.csv
-│ └── mongoDB_demo.ipynb
+│   ├── data.csv
+│   └── mongoDB_demo.ipynb
 ├── projectflow.txt
 ├── pyproject.toml
 ├── README.md
 ├── requirements.txt
 ├── setup.py
 ├── src
-│ ├── init.py
-│ ├── pycache
-│ │ └── init.cpython-310.pyc
-│ ├── cloud_storage
-│ │ ├── init.py
-│ │ └── aws_storage.py
-│ ├── components
-│ │ ├── init.py
-│ │ ├── data_ingestion.py
-│ │ ├── data_transformation.py
-│ │ ├── data_validation.py
-│ │ ├── model_evaluation.py
-│ │ ├── model_pusher.py
-│ │ └── model_trainer.py
-│ ├── configuration
-│ │ ├── init.py
-│ │ ├── aws_connection.py
-│ │ └── mongo_db_connection.py
-│ ├── constants
-│ │ └── init.py
-│ ├── data_access
-│ │ ├── init.py
-│ │ └── proj1_data.py
-│ ├── entity
-│ │ ├── init.py
-│ │ ├── artifact_entity.py
-│ │ ├── config_entity.py
-│ │ ├── estimator.py
-│ │ └── s3_estimator.py
-│ ├── exception
-│ │ └── init.py
-│ ├── logger
-│ │ ├── init.py
-│ │ └── pycache
-│ ├── pipline
-│ │ ├── init.py
-│ │ ├── prediction_pipeline.py
-│ │ └── training_pipeline.py
-│ └── utils
-│ ├── init.py
-│ └── main_utils.py
-├── src.egg-info
-│ ├── dependency_links.txt
-│ ├── PKG-INFO
-│ ├── SOURCES.txt
-│ └── top_level.txt
-└── template.py
-
-18 directories, 48 files
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   └── __init__.cpython-310.pyc
+│   ├── cloud_storage
+│   │   ├── __init__.py
+│   │   └── aws_storage.py
+│   ├── components
+│   │   ├── __init__.py
+│   │   ├── data_ingestion.py
+│   │   ├── data_transformation.py
+│   │   ├── data_validation.py
+│   │   ├── model_evaluation.py
+│   │   ├── model_pusher.py
+│   │   └── model_trainer.py
+│   ├── configuration
+│   │   ├── __init__.py
+│   │   ├── aws_connection.py
+│   │   └── mongo_db_connection.py
+│   ├── constants
+│   │   └── __init__.py
