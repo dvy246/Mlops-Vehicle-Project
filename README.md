@@ -1,9 +1,9 @@
-# Mlops-Vehicle-Project
+### Mlops-Vehicle-Project
 
-MLOps Project - Vehicle Insurance Data Pipeline
+### MLOps Project - Vehicle Insurance Data Pipeline
 Welcome to this MLOps project, designed to demonstrate a robust pipeline for managing vehicle insurance data. This project aims to impress recruiters and visitors by showcasing the various tools, techniques, services, and features that go into building and deploying a machine learning pipeline for real-world data management. Follow along to learn about project setup, data processing, model deployment, and CI/CD automation!
 
-📁 Project Setup and Structure
+### Project Setup and Structure
 Step 1: Project Template
 Start by executing the template.py file to create the initial project template, which includes the required folder structure and placeholder files.
 Step 2: Package Management
@@ -17,7 +17,7 @@ pip install -r requirements.txt
 Verify the local packages by running:
 pip list
 
-📊 MongoDB Setup and Data Management
+### MongoDB Setup and Data Management
 Step 4: MongoDB Atlas Configuration
 Sign up for MongoDB Atlas and create a new project.
 Set up a free M0 cluster, configure the username and password, and allow access from any IP address (0.0.0.0/0).
@@ -32,7 +32,7 @@ Create logging and exception handling modules. Test them on a demo file demo.py.
 Step 7: Exploratory Data Analysis (EDA) and Feature Engineering
 Analyze and engineer features in the EDA and Feature Engg notebook for further processing in the pipeline.
 
-📥 Data Ingestion
+### Data Ingestion
 Step 8: Data Ingestion Pipeline
 Define MongoDB connection functions in configuration.mongo_db_connections.py.
 Develop data ingestion components in the data_access and components.data_ingestion.py files to fetch and transform data.
@@ -41,24 +41,24 @@ Run demo.py after setting up MongoDB connection as an environment variable.
 Setting Environment Variables
 Set MongoDB URL:
 
-# For Bash
+## For Bash
 export MONGODB_URL="mongodb+srv://<username>:<password>...."
 
-# For Powershell
+## For Powershell
 $env:MONGODB_URL = "mongodb+srv://<username>:<password>...."
 Note: On Windows, you can also set environment variables through the system settings.
 
-🔍 Data Validation, Transformation & Model Training
+### Data Validation, Transformation & Model Training
 Step 9: Data Validation
 Define schema in config.schema.yaml and implement data validation functions in utils.main_utils.py.
 
-Step 10: Data Transformation
+### Data Transformation
 Implement data transformation logic in components.data_transformation.py and create estimator.py in the entity folder.
 
-Step 11: Model Training
+### Model Training
 Define and implement model training steps in components.model_trainer.py using code from estimator.py.
 
-# Project Structure
+### Project Structure
 
 ```bash
 app.py
